@@ -22,9 +22,11 @@ public class LongestCommonPrefix {
         return index == 0 ? "" : first.substring(0, index);
     }
 
+    /*---------Driver Code--------------*/
     public static void main(String[] args) {
         String[] arr = {"flower", "flow","flight"};
         String ans = longestCommonPrefixCompute(arr);
         System.out.println(ans);
+        //o/p : "fl"
     }
 }
