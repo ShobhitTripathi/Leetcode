@@ -1,0 +1,51 @@
+
+public static void main(Sting[])
+
+
+names = {"abc","shobhit", "xyz"};
+
+[1,2,3,4,6,8,9]
+mid = 3
+mid = 1
+
+dividing by 2 
+
+public static int find (String name) {
+	int index = -1;
+	int start = 0, end = names.length() - 1, mid = 0;
+	while (start < end) {
+		mid = start + (end - start) / 2;
+		if (names[mid].equals(name)) {
+			return mid;
+		}
+		for (int i = 0;i < name.length - 1; i++) {
+			if (names[mid].charAt(i) < name.charAt(i)) {
+				start = mid + 1;
+			} else {
+				end = mid -1;
+			}
+		}
+	}
+	return index;
+}
+
+str = abcd
+ans = ""
+
+printfunc(str, ans)
+
+str.lenth == 0
+	print ans;
+	return;
+	
+i = 0 to str.length;
+	ch = char at (i)
+	res = str.subStrng(0,i) + str.subString(i + 1)
+	
+	recurse printfunc(res, ans + ch)
+
+i = 0
+	ab  a
+	abc ab
+	abcd abc
+
