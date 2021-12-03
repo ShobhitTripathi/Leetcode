@@ -1,0 +1,74 @@
+S = aabcbc
+
+a 	a
+aa 	#
+aab b
+
+
+
+
+
+S = xyzyxz
+
+x	x    	x
+xy	x		y x
+xyz  x		z y x
+xyzy x		z y x
+xyzyx z		z y 
+xyzyxz #
+
+xxxxz#
+
+S = abcdac
+
+a	a
+ab	a
+abc	a
+abcd	a
+abcda	b
+abcdac	b
+
+aaaabb
+
+s = xyzyxz
+public static String compute(String s) {
+	int[] count = new int[26];
+	Array.fill(count,0);
+	Queue<Character> q = new LinkedList<>();
+	StringBuilder sb = new StringBuilder();
+	
+	char ans = '#';
+	char[] charArr = s.toCharArray();
+	
+	for (int i = 0;i < charArr.length;i++) {
+		count[charArr[i] - 'a']++;
+		if (count[charArr[i] - 'a'] <= 1) {
+			q.offer(charArr[i]);
+		} else {
+			while (!q.isEmpty()) {
+				char temp = q.peek();
+				if(count[temp] > 1) {
+					q.remove();
+				} 
+			}
+		if (!q.isEmpty())
+			sb.append(q.peek());
+		else
+			sb.append(ans);
+		}
+	}
+	return sb.toString();
+}
+S = aabccb
+count[a:2  b:2  c:2       ]
+Queue [ ]
+a 	a
+aa	#
+aab b
+aabc	b
+aabcb   c
+aabcbc  #	
+
+
+
+
