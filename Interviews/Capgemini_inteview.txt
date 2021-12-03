@@ -1,0 +1,64 @@
+public static Singleton {
+	private static Singleton uniqueInstance;
+	
+	public static Singleton getInstance () {
+		if (uniqueInstance == null) {
+			synchronized(Singleton.class) {
+				if (uniqueInstance == null) {
+					uniqueInstance = new Singleton();
+				}
+			}
+		}
+		return uniqueInstance;
+	}
+}
+
+
+
+class Parent{
+	static{
+		SOP(1);
+	}
+	{
+	SOP(2);
+	}
+
+	public Parent(){
+		SOP(3);
+	}
+
+	public Parent(String str){
+		SOP(4);
+	}
+}
+
+
+
+class Child extends Parent{
+	static {
+		SOP(5);
+	}
+	{
+		SOP(6);
+	}
+	
+	public Child(){
+		SOP(7);
+	}
+	
+	public Child(String str) {
+		SOP(8);
+	}
+}
+
+
+class ObjectLoading {
+	main() {
+	Parent obj = new Child();   7
+	Child obj = new Child();    7
+	Parent obj = new Parent(); 	3
+	Parent obj = new Child("abc");	8
+	Child obj = new Child("abc"); 	8
+	Parent obj = new Parent("abc"); 4
+	}
+}
