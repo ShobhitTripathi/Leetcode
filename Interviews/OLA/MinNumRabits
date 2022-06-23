@@ -18,9 +18,8 @@ Input: arr[] = {10, 10, 10}
 Output: 11
 Explanation: Considering all the rabbits to be of the same color, the minimum number of rabbits present in forest are 10 + 1 = 11.
 
-*/
 
-/* 
+
 Approach: The approach to solving this problem is to find the number of groups of rabbits that have the same color and the number of rabbits in each group. Below are the steps:
 
 Initialize a variable count to store the number of rabbits in each group.
@@ -30,6 +29,7 @@ If (y%(x + 1)) is 0, then there must be (y / (x + 1)) groups of (x + 1) rabbits.
 If (y % (x + 1)) is non-zero, then there must be (y / (x + 1)) + 1 groups of (x + 1) rabbits.
 Add the product of the number of groups and the number of rabbits in each group to the variable count.
 After the above steps, the value of count gives the minimum number of rabbits in the forest.
+
 */
 
 
