@@ -30,25 +30,25 @@ Note that we only care about characters that are still in the string at the end 
 
 class Solution {
     public int minDeletions(String s) {
-        int[] freq = new int[26];
-        
-        //create frequecy array
-        for (int i = 0;i < s.length();i++) {
-            freq[s.charAt(i) - 'a']++;
+        // Store the frequency of each character
+        int[] frequency = new int[26];
+        for (int i = 0; i < s.length(); i++) {
+            frequency[s.charAt(i) - 'a']++;
         }
-        Arrays.sort(freq);
         
-        Set<Integer> set = new HashSet<>();
-        int count = 0;
-        
-        for (int i = 25;i >= 0;i--) {
-            int key = freq[i];
-            while(key != 0 && set.contains(key)) {
-                key--;
-                count++;
+        int deleteCount = 0;
+        // Use a set to store the frequencies we have already seen
+        HashSet<Integer> seenFrequencies = new HashSet<>();
+        for (int i = 0; i < 26; i++) {
+            // Keep decrementing the frequency until it is unique
+            while (frequency[i] > 0 && seenFrequencies.contains(frequency[i])) {
+                frequency[i]--;
+                deleteCount++;
             }
-            set.add(key);
+            // Add the newly occupied frequency to the set
+            seenFrequencies.add(frequency[i]);
         }
-     return count;   
+        
+        return deleteCount;
     }
 }
