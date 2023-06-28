@@ -38,6 +38,17 @@ class Solution {
             sum2 += nums2[j++];
         }
         max += Math.max(sum1, sum2);
+        // since we have to return 32-bit integer so take modulo and return it.
         return (int)(max % 1000000007);
     }
 }
+
+/*
+Solution: To avoid this, the maximum value than it can reach is 10^12. Taking long long int will solve the problem. And at the end, since we have to return 32-bit integer so take modulo and return it.
+Rest, i think it's simple to understand how dp is working.
+1 Taking maximum of the sums at each intersection point and at the end will give the answer.
+2 To get that, take two pointers eah for an array and start traversing.
+3 Check sum and take maximum at every intersection point or at the end and add it to the answer.
+This will require 1-Pass of both the arrays.
+Code will clear any remaining doubts.
+*/
