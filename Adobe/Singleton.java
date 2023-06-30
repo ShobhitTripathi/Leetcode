@@ -23,3 +23,27 @@ public class Singleton {
     
     // other methods and variables
 }
+
+//with thread Safety
+/*
+When implementing the Singleton pattern with thread safety, we need to ensure that multiple threads cannot create multiple instances of the Singleton class simultaneously. 
+There are several ways to achieve thread safety, but one of the most common approaches is to use double-checked locking along with synchronization.
+*/
+public class Singleton {
+    private static volatile Singleton instance;
+
+    private Singleton() {
+        // Private constructor to prevent instantiation from outside the class
+    }
+
+    public static Singleton getInstance() {
+        if (instance == null) {
+            synchronized (Singleton.class) {
+                if (instance == null) {
+                    instance = new Singleton();
+                }
+            }
+        }
+        return instance;
+    }
+}
