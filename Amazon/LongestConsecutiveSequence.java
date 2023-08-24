@@ -51,4 +51,29 @@ public class LongestConsecutiveSequence {
         }
         return max;
     }
+
+
+
+    // using Hashset
+        private static int largestSubsequenceCount(int[] arr) {
+        Set<Integer> set = new HashSet<>();
+        int max = 0;
+
+        // add everything to the set
+        for (int n : arr)
+            set.add(n);
+
+        for (int n : arr) {
+            if (!set.contains(n - 1)) {
+                int curr_max = 0;
+                int temp = n;
+                while (set.contains(temp)) {
+                    curr_max++;
+                    temp++;
+                }
+                max = Math.max(curr_max, max);
+            }
+        }
+        return max;
+    }
 }
