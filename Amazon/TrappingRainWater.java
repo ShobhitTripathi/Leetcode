@@ -53,7 +53,56 @@ public class TrappingRainWater {
     }
 
 
-    // Neetcode solution
+
+
+/* 
+NeetCode 
+You are given an array non-negative integers heights which represent an elevation map. Each value heights[i] represents the height of a bar, which has a width of 1.
+
+Return the maximum area of water that can be trapped between the bars.
+
+Example 1:
+Input: height = [0,2,0,3,1,0,1,3,2,1]
+Output: 9
+
+*/
+
+    public int trap(int[] height) {
+        int result = 0;
+        int left = 0, right = height.length - 1;
+        int leftMax = height[left];
+        int rightMax = height[right];
+
+        while (left < right) {
+            leftMax = Math.max(leftMax, height[left]);
+            rightMax = Math.max(rightMax, height[right]);
+
+            if (leftMax < rightMax) {
+                result += leftMax - height[left];
+                left++;
+            } else {
+                result += rightMax - height[right];
+                right--;
+            }
+        }
+        return result;
+    }
+
+
+    /*
+    Neetcode solution
+You are given an integer array heights where heights[i] represents the height of the i th bar.
+
+You may choose any two bars to form a container. Return the maximum amount of water a container can store.
+
+Example 1:
+Input: height = [1,7,2,5,4,7,3,6]
+Output: 36
+
+Example 2:
+Input: height = [2,2,2]
+Output: 4
+    */
     public int maxArea(int[] heights) {
         if (heights == null || heights.length == 0)
             return 0;
