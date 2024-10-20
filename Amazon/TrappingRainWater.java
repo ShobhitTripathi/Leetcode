@@ -52,6 +52,29 @@ public class TrappingRainWater {
         return result;
     }
 
+
+    // Neetcode solution
+    public int maxArea(int[] heights) {
+        if (heights == null || heights.length == 0)
+            return 0;
+        int result = 0;
+        int left = 0;
+        int right = heights.length - 1;
+
+        while (left < right) {
+            // right - left is the distance (width) between the two lines, and Math.min(heights[left], heights[right]) is the height (because the shorter line determines how much water the container can hold)
+            int area = Math.min(heights[left], heights[right]) * (right - left);
+            result = Math.max(result, area);
+            if (heights[left] <= heights[right]) {
+                left++;
+            } else {
+                right--;
+            }
+        }
+
+        return result;
+    }
+
     public static void main(String[] args) {
         //
         int[] arr = {0,1,0,2,1,0,1,3,2,1,2,1};
