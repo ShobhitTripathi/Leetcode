@@ -46,29 +46,37 @@ At most 5 * 104 calls will be made to inc, dec, getMaxKey, and getMinKey.
 ```
 Key Logic -:
 
-
 To design this data structure with 
-O(1) average time complexity for all operations, we can use a combination of a HashMap and a Double Linked List. Here's the strategy:
+O(1) average time complexity for all operations,
+we can use a combination of a HashMap and a Double Linked List.
+
+Here's the strategy:
 
 Key Concepts
 HashMap (keyCount): To store the count of each string.
-Double Linked List (countBucket): To store buckets of keys grouped by their counts. This allows us to efficiently get the minimum and maximum counts.
-Each node in the linked list represents a bucket of keys that share the same count. The list is sorted by count in ascending order.
+
+Double Linked List (countBucket):
+  To store buckets of keys grouped by their counts.
+  This allows us to efficiently get the minimum and maximum counts.
+
+Each node in the linked list represents a bucket of keys that share the same count.
+The list is sorted by count in ascending order.
 
 Class Implementation
-inc(String key):
 
+inc(String key):
 Increment the count of the key in keyCount.
 Move the key to the next bucket in the countBucket.
 If the current bucket becomes empty, remove it.
-dec(String key):
 
+dec(String key):
 Decrement the count of the key in keyCount.
 Move the key to the previous bucket in the countBucket.
 If the current bucket becomes empty, remove it.
-getMaxKey() and getMinKey():
 
+getMaxKey() and getMinKey():
 Retrieve the first or last key from the linked list.
+
 ```
 
 
