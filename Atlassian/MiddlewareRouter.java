@@ -166,6 +166,23 @@ public class MiddlewareRouter<T> {
         return null;
     }
 
+     public void printTrie() {
+        printTrieHelper(root, "");
+    }
+
+    // Recursive helper method to print the Trie structure
+    private void printTrieHelper(TrieNode<T> node, String prefix) {
+        if (node == null) return;
+
+        if (node.isEndpoint) {
+            System.out.println(prefix + " -> " + node.result);
+        }
+
+        for (Map.Entry<String, TrieNode<T>> entry : node.children.entrySet()) {
+            printTrieHelper(entry.getValue(), prefix + "/" + entry.getKey());
+        }
+    }
+
     // TrieNode structure
     private static class TrieNode<T> {
         Map<String, TrieNode<T>> children = new HashMap<>();
@@ -197,5 +214,7 @@ public class MiddlewareRouter<T> {
 
         // Test unmatched paths
         System.out.println(router.callRoute("/unknown/path")); // Output: null
+
+       router.printTrie();
     }
 }
