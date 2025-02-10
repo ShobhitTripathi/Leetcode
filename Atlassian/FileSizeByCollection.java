@@ -159,6 +159,7 @@ class CollectionSizeAnalyzer {
 
         // Step 2: Thread-safe max-heap for Top-N extraction
         PriorityBlockingQueue<Map.Entry<String, Long>> maxHeap = new PriorityBlockingQueue<>(
+            collectionSizeMap.size(),
             (e1, e2) -> Long.compare(e2.getValue(), e1.getValue()) // Descending order of size
         );
 
