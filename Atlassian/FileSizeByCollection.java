@@ -121,40 +121,91 @@ List is preferred for ordered results.
 Set isn't ideal here as ordering and duplicates are irrelevant for the top N requirement.
 */
 
-import java.util.concurrent.*;
 import java.util.*;
+import java.util.concurrent.*;
+
+class File {
+    private String name;
+    private String collection;
+    private long size;
+
+    public File(String name, String collection, long size) {
+        this.name = name;
+        this.collection = collection;
+        this.size = size;
+    }
+
+    public String getCollection() {
+        return collection;
+    }
+
+    public long getSize() {
+        return size;
+    }
+}
 
 class CollectionSizeAnalyzer {
+
     public List<Map.Entry<String, Long>> getTopCollectionsBySize(List<File> files, int topN) {
+        // Step 1: Thread-safe map for aggregating collection sizes
         Map<String, Long> collectionSizeMap = new ConcurrentHashMap<>();
 
-        // Step 1: Aggregate file sizes by collection
+        // Aggregate file sizes by collection using parallelStream
         files.parallelStream().forEach(file -> {
             if (file.getCollection() != null) {
                 collectionSizeMap.merge(file.getCollection(), file.getSize(), Long::sum);
             }
         });
 
-        // Step 2: Use a max-heap with thread safety
-        PriorityQueue<Map.Entry<String, Long>> maxHeap = new PriorityQueue<>(
-            (e1, e2) -> Long.compare(e2.getValue(), e1.getValue())
+        // Step 2: Thread-safe max-heap for Top-N extraction
+        PriorityBlockingQueue<Map.Entry<String, Long>> maxHeap = new PriorityBlockingQueue<>(
+            (e1, e2) -> Long.compare(e2.getValue(), e1.getValue()) // Descending order of size
         );
 
-        synchronized (maxHeap) {
-            maxHeap.addAll(collectionSizeMap.entrySet());
-        }
+        // Add all entries from the map to the heap
+        maxHeap.addAll(collectionSizeMap.entrySet());
 
         // Step 3: Extract the top N collections
         List<Map.Entry<String, Long>> result = new ArrayList<>();
-        synchronized (maxHeap) {
-            for (int i = 0; i < topN && !maxHeap.isEmpty(); i++) {
-                result.add(maxHeap.poll());
-            }
+        for (int i = 0; i < topN && !maxHeap.isEmpty(); i++) {
+            result.add(maxHeap.poll());
         }
 
         return result;
     }
+
+    public long getTotalFileSize(List<File> files) {
+        // Calculate total size of all files using parallelStream
+        return files.parallelStream().mapToLong(File::getSize).sum();
+    }
 }
+
+public class Main {
+    public static void main(String[] args) {
+        // Sample input
+        List<File> files = Arrays.asList(
+            new File("file1.txt", null, 100),
+            new File("file2.txt", "collection1", 200),
+            new File("file3.txt", "collection1", 200),
+            new File("file4.txt", "collection2", 300),
+            new File("file5.txt", null, 100)
+        );
+
+        CollectionSizeAnalyzer analyzer = new CollectionSizeAnalyzer();
+
+        // Calculate total file size
+        long totalSize = analyzer.getTotalFileSize(files);
+        System.out.println("Total size of files processed: " + totalSize);
+
+        // Calculate top collections by size
+        List<Map.Entry<String, Long>> topCollections = analyzer.getTopCollectionsBySize(files, 2);
+        System.out.println("Top Collections by Total File Size:");
+        for (Map.Entry<String, Long> entry : topCollections) {
+            System.out.println("Collection: " + entry.getKey() + ", Total Size: " + entry.getValue());
+        }
+    }
+}
+
 
 
 
