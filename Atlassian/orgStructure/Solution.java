@@ -27,7 +27,137 @@ getCommonGroupForEmployees (
 ) -> Compan
  */
 
+// ChatGpt Solution
+package atlassian.codeDS;
 
+import java.util.*;
+
+// Define the Group class
+class Group {
+    String name;
+    List<Group> subGroups;
+    List<String> employees;
+
+    public Group(String name) {
+        this.name = name;
+        this.subGroups = new ArrayList<>();
+        this.employees = new ArrayList<>();
+    }
+}
+
+public class CommonGroupFinder {
+
+    public static String getCommonGroupForEmployees(Group currentGroup, Set<String> targetEmployees) {
+        if (currentGroup == null) {
+            return null;
+        }
+
+        // Check how many target employees are in the current group
+        int countInCurrentGroup = 0;
+        for (String employee : targetEmployees) {
+            if (currentGroup.employees.contains(employee)) {
+                countInCurrentGroup++;
+            }
+        }
+
+        // If all target employees are in the current group, it is the common group
+        if (countInCurrentGroup == targetEmployees.size()) {
+            return currentGroup.name;
+        }
+
+        // Check subgroups
+        String commonSubGroup = null;
+        int matchedSubGroups = 0;
+
+        for (Group subGroup : currentGroup.subGroups) {
+            String result = getCommonGroupForEmployees(subGroup, targetEmployees);
+            if (result != null) {
+                matchedSubGroups++;
+                commonSubGroup = result;
+            }
+        }
+
+        // If exactly one subgroup contains all the target employees, return that subgroup
+        if (matchedSubGroups == 1) {
+            return commonSubGroup;
+        }
+
+        // If multiple subgroups or no subgroups match, the current group is the lowest common group
+        if (countInCurrentGroup + matchedSubGroups > 0) {
+            return currentGroup.name;
+        }
+
+        return null;
+    }
+
+    public static void printGroup(Group group, int level) {
+        if (group == null) {
+            return;
+        }
+
+        // Indent to show hierarchy level
+        System.out.println("  ".repeat(level) + "Group: " + group.name);
+
+        // Print employees in this group
+        if (!group.employees.isEmpty()) {
+            System.out.println("  ".repeat(level + 1) + "Employees: " + group.employees);
+        }
+
+        // Recursively print subgroups
+        for (Group subGroup : group.subGroups) {
+            printGroup(subGroup, level + 1);
+        }
+    }
+
+    public static void main(String[] args) {
+        // Create the hierarchy
+        Group company = new Group("Company");
+
+        Group hr = new Group("HR");
+        Group engg = new Group("Engg");
+        company.subGroups.add(hr);
+        company.subGroups.add(engg);
+
+        Group be = new Group("BE");
+        Group fe = new Group("FE");
+        engg.subGroups.add(be);
+        engg.subGroups.add(fe);
+
+//        Group mona = new Group("Mona");
+//        Group springs = new Group("Springs");
+//        hr.subGroups.add(mona);
+//        hr.subGroups.add(springs);
+
+        be.employees.add("Alice");
+        be.employees.add("Bob");
+
+        fe.employees.add("Lisa");
+        fe.employees.add("Marley");
+
+        hr.employees.add("Mona");
+        hr.employees.add("Springs");
+
+        // Print the hierarchy
+        System.out.println("Company Hierarchy:");
+        printGroup(company, 0);
+
+        // Test the function
+//        Set<String> targetEmployees1 = new HashSet<>(Arrays.asList("Lisa", "Marley"));
+//        System.out.println("\nCommon group for Lisa and Marley: " + getCommonGroupForEmployees(company, targetEmployees1)); // Expected: FE
+//
+//        Set<String> targetEmployees2 = new HashSet<>(Arrays.asList("Alice", "Marley"));
+//        System.out.println("Common group for Alice and Marley: " + getCommonGroupForEmployees(company, targetEmployees2)); // Expected: Engg
+
+        Set<String> targetEmployees3 = new HashSet<>(Arrays.asList("Mona", "Lisa"));
+        System.out.println("Common group for Mona and Lisa: " + getCommonGroupForEmployees(company, targetEmployees3)); // Expected: Company
+    }
+}
+
+
+
+
+
+// My Attemp to solution
 import java.util.ArrayList;
 import java.util.List;
 
