@@ -154,6 +154,32 @@ public class Solution {
 
 ```
 
+```
+2nd solution
+
+Approach (Brief)
+Use a map to track reserved seats by row.
+For each reserved row, check 3 possible 4-seat blocks:
+Block A: seats 2–5
+Block B: seats 4–7
+Block C: seats 6–9
+
+A row can fit:
+2 families if both A and C are free
+1 family if any one of A, B, or C is free
+Rows with no reservations can fit 2 families.
+
+Sum the results from reserved and unreserved rows.
+
+⏱️ Time Complexity: O(k)
+k = number of reserved seats
+
+One pass to map seats, then constant-time checks per row.
+
+🧠 Space Complexity: O(m)
+m = number of unique rows with reservations
+```
+
 ---
 
 ## 🧮 Time and Space Complexity
