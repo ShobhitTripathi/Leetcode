@@ -84,6 +84,74 @@ public class Solution {
         return result;
     }
 }
+
+
+
+
+// 2
+import java.util.*;
+
+public class Solution {
+    public int maxNumberOfFamilies(int n, int[][] reservedSeats) {
+        // Map to store reserved seats row-wise
+        // Key: Row number, Value: Set of reserved seat numbers in that row
+        Map<Integer, Set<Integer>> reservedMap = new HashMap<>();
+
+        // Populate the map with reserved seats
+        for (int[] seat : reservedSeats) {
+            int row = seat[0];
+            int col = seat[1];
+            // Add the reserved seat to the corresponding row's set
+            reservedMap
+                .computeIfAbsent(row, k -> new HashSet<>())
+                .add(col);
+        }
+
+        int total = 0; // Total families that can be seated
+
+        // Process each row that has at least one reserved seat
+        for (int row : reservedMap.keySet()) {
+            Set<Integer> reserved = reservedMap.get(row);
+
+            // Check for three possible 4-seat blocks:
+            // Block A: seats 2–5
+            // Block B: seats 4–7 (middle block)
+            // Block C: seats 6–9
+            boolean left = isFree(reserved, 2, 3, 4, 5);
+            boolean middle = isFree(reserved, 4, 5, 6, 7);
+            boolean right = isFree(reserved, 6, 7, 8, 9);
+
+            // If both left and right blocks are available, we can place 2 families
+            if (left && right) {
+                total += 2;
+            }
+            // If any one block is available, we can place 1 family
+            else if (left || middle || right) {
+                total += 1;
+            }
+            // else: no space available for a family in this row
+        }
+
+        // Rows with no reservations can seat 2 families
+        // (since both block A and C are guaranteed to be free)
+        int freeRows = n - reservedMap.size();
+        total += freeRows * 2;
+
+        return total;
+    }
+
+    // Helper method to check if all specified seats are unreserved in the row
+    private boolean isFree(Set<Integer> reserved, int... seats) {
+        for (int seat : seats) {
+            if (reserved.contains(seat)) {
+                return false; // One of the required seats is taken
+            }
+        }
+        return true; // All seats are available
+    }
+}
+
+
 ```
 
 ---
