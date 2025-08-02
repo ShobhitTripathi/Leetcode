@@ -30,11 +30,7 @@ There are no empty lists.
 ```approach
 Algorithm
 
-Initialize the first level of the BFS tree by adding all the elements in the input nestedList to the queue.
-For each level, pop out the front element from the queue.
-If it is a list then add its elements into the queue. Otherwise, update the value of sumOfElements, maxDepth and sumOfProducts.
-When the queue becomes empty, return the value of (maxDepth + 1) * sumOfElements - sumOfProducts.
-
+DFS
 TIME COMPLEXITY : O(N)
 
 ```
