@@ -33,16 +33,43 @@ You're given a list of `n` houses, each with 3 costs [Red, Green, Blue]. Paint e
 
 #### Java-like Code Snippet:
 ```java
-int paint(int house, int color, int[][] costs, Map<Pair, Integer> memo) {
-    if (memo.containsKey(new Pair(house, color))) return memo.get(...);
-    int total = costs[house][color];
-    if (house < costs.length - 1) {
-        total += Math.min(
-            paint(house + 1, (color + 1) % 3),
-            paint(house + 1, (color + 2) % 3));
+class Solution {
+
+    private int[][] costs;
+    private Map<String, Integer> memo;
+
+    public int minCost(int[][] costs) {
+        if (costs.length == 0) {
+            return 0;
+        }
+        this.costs = costs;
+        this.memo = new HashMap<>();
+        return Math.min(
+            paintCost(0, 0),
+            Math.min(paintCost(0, 1), paintCost(0, 2))
+        );
     }
-    memo.put(...);
-    return total;
+
+    private int paintCost(int n, int color) {
+        if (memo.containsKey(getKey(n, color))) {
+            return memo.get(getKey(n, color));
+        }
+        int totalCost = costs[n][color];
+        if (n == costs.length - 1) {} else if (color == 0) { // Red
+            totalCost += Math.min(paintCost(n + 1, 1), paintCost(n + 1, 2));
+        } else if (color == 1) { // Green
+            totalCost += Math.min(paintCost(n + 1, 0), paintCost(n + 1, 2));
+        } else { // Blue
+            totalCost += Math.min(paintCost(n + 1, 0), paintCost(n + 1, 1));
+        }
+        memo.put(getKey(n, color), totalCost);
+
+        return totalCost;
+    }
+
+    private String getKey(int n, int color) {
+        return String.valueOf(n) + " " + String.valueOf(color);
+    }
 }
 ```
 
@@ -66,15 +93,32 @@ int paint(int house, int color, int[][] costs, Map<Pair, Integer> memo) {
 
 #### Java-like Code Snippet:
 ```java
-int[] prev = costs[n - 1];
-for (int i = n - 2; i >= 0; i--) {
-    int[] curr = new int[3];
-    curr[0] = costs[i][0] + Math.min(prev[1], prev[2]);
-    curr[1] = costs[i][1] + Math.min(prev[0], prev[2]);
-    curr[2] = costs[i][2] + Math.min(prev[0], prev[1]);
-    prev = curr;
+
+class Solution {
+
+    public int minCost(int[][] costs) {
+        if (costs.length == 0) return 0;
+
+        int[] previousRow = costs[costs.length - 1];
+
+        for (int n = costs.length - 2; n >= 0; n--) {
+            int[] currentRow = costs[n];
+
+            // Total cost of painting the nth house red.
+            currentRow[0] += Math.min(previousRow[1], previousRow[2]);
+            // Total cost of painting the nth house green.
+            currentRow[1] += Math.min(previousRow[0], previousRow[2]);
+            // Total cost of painting the nth house blue.
+            currentRow[2] += Math.min(previousRow[0], previousRow[1]);
+            previousRow = currentRow;
+        }
+
+        return Math.min(
+            Math.min(previousRow[0], previousRow[1]),
+            previousRow[2]
+        );
+    }
 }
-return Math.min(prev[0], Math.min(prev[1], prev[2]));
 ```
 
 ---
