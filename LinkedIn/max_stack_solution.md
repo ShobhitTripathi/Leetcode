@@ -58,9 +58,11 @@ class MaxStack {
     private TreeMap<Integer, List<Node>> map;
 
     public MaxStack() {
-        head = new Node(0); tail = new Node(0);
-        head.next = tail; tail.prev = head;
         map = new TreeMap<>();
+        head = new Node(0);
+        tail = new Node(0);
+        head.next = tail;
+        tail.prev = head;
     }
 
     public void push(int x) {
