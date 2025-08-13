@@ -33,7 +33,8 @@ Follow up: If the maximum number of allowed calls to the API knows is 3 * n, cou
 
 ```
 Approach:
-Our algorithm firstly narrows the people down to a single celebrityCandidate using the algorithm just above, and then it checks whether or not that candidate is a celebrity using the isCelebrity(...).
+Our algorithm firstly narrows the people down to a single celebrityCandidate using the algorithm just above,
+ and then it checks whether or not that candidate is a celebrity using the isCelebrity(...).
 ```
 
 ```java
