@@ -38,7 +38,7 @@ import java.util.*;
 
 class RandomizedSet {
     private List<Integer> list;
-    private Map<Integer, Integer> map;
+    private Map<Integer, Integer> map; // value : list index 
     private Random rand;
 
     public RandomizedSet() {
