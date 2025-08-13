@@ -56,4 +56,63 @@ public TreeNode upsideDownBinaryTree(TreeNode root) {
 }
 
 
+// solution with matrix iself O(N)
+import java.util.Stack;
+
+class GfG {
+
+    static int celebrity(int[][] mat) {
+        int n = mat.length;
+        Stack<Integer> st = new Stack<>();
+
+        // Step 1: Push all people (0 to n-1) into the stack
+        for (int i = 0; i < n; i++)
+            st.push(i);
+
+        // Step 2: Find a potential celebrity
+        // Keep comparing two people at a time until only one candidate remains
+        while (st.size() > 1) {
+
+            int a = st.pop(); // person A
+            int b = st.pop(); // person B
+
+            // If A knows B → A cannot be a celebrity, push B back
+            if (mat[a][b] != 0) {
+                st.push(b);
+            }
+            // Else, B knows A → B cannot be a celebrity, push A back
+            else {
+                st.push(a);
+            }
+        }
+
+        // Step 3: Potential celebrity candidate
+        int c = st.pop();
+
+        // Step 4: Verify the candidate
+        for (int i = 0; i < n; i++) {
+            if (i == c) continue;
+
+            // Celebrity must know NO ONE (row values = 0)
+            // and EVERYONE must know the celebrity (column values = 1)
+            if (mat[c][i] != 0 || mat[i][c] == 0)
+                return -1; // Not a celebrity
+        }
+
+        // Step 5: Candidate passes verification → celebrity found
+        return c;
+    }
+
+    public static void main(String[] args) {
+        int[][] mat = {
+            { 1, 1, 0 },
+            { 0, 1, 0 },
+            { 0, 1, 1 }
+        };
+        System.out.println(celebrity(mat)); // Output: 1
+    }
+}
+
+
+
 ```
