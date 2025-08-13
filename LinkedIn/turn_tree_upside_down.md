@@ -34,18 +34,26 @@ Every right node in the tree has no children.
 ```java
 
 public TreeNode upsideDownBinaryTree(TreeNode root) {
-  if (root == null || root.left == null && root.right == null)
-    return root;
+    // Base case: if tree is empty or has no left child, return as is
+    if (root == null || (root.left == null && root.right == null))
+        return root;
 
-  TreeNode newRoot = upsideDownBinaryTree(root.left);
-  
-  root.left.left = root.right;
-  root.left.right = root;
-  
-  root.left = null;
-  root.right = null;
-      
-  return newRoot;
+    // Recursively process the left subtree; newRoot will be the final root
+    TreeNode newRoot = upsideDownBinaryTree(root.left);
+    
+    // Rewire pointers:
+    // Left child's left pointer becomes current node's right child
+    root.left.left = root.right;
+    // Left child's right pointer becomes the current node
+    root.left.right = root;
+    
+    // Break the original links to avoid cycles
+    root.left = null;
+    root.right = null;
+    
+    // Return the new root from recursion
+    return newRoot;
 }
+
 
 ```
