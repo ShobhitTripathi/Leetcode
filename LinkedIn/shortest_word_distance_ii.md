@@ -29,7 +29,7 @@ obj.shortest("makes", "coding")   -> 1
 
 ### Preprocessing (Constructor)
 - Traverse `wordsDict`.
-- Build a hash map (`Map<String, List<Integer>>`) mapping each word to a **sorted list** of its indices in the array.
+- Build a hash map (`Map<String, List<Integer>>`) mapping each word to a of its indices in the array.
 - Time: O(N), Space: O(N), where N is the total number of words.
 
 ### Query (`shortest(word1, word2)`)
@@ -46,49 +46,37 @@ obj.shortest("makes", "coding")   -> 1
 ### Java
 ```java
 class WordDistance {
+    // Map each word to a list of its indices in the words array
     private Map<String, List<Integer>> map;
+
     public WordDistance(String[] words) {
         map = new HashMap<>();
         for (int i = 0; i < words.length; i++) {
+            // Store all positions (indices) where each word appears
             map.computeIfAbsent(words[i], k -> new ArrayList<>()).add(i);
         }
     }
 
     public int shortest(String w1, String w2) {
+        // Get the index lists for both words
         List<Integer> l1 = map.get(w1), l2 = map.get(w2);
         int i = 0, j = 0, min = Integer.MAX_VALUE;
+
+        // Use two pointers to find the minimum distance between occurrences
         while (i < l1.size() && j < l2.size()) {
             int idx1 = l1.get(i), idx2 = l2.get(j);
-            min = Math.min(min, Math.abs(idx1 - idx2));
+            min = Math.min(min, Math.abs(idx1 - idx2)); // update min distance
+
+            // Move the pointer pointing to the smaller index forward
             if (idx1 < idx2) i++;
             else j++;
         }
-        return min;
+        return min; // return the smallest distance found
     }
 }
+
 ```
 
-### Python
-```python
-from collections import defaultdict
-class WordDistance:
-    def __init__(self, words):
-        self.d = defaultdict(list)
-        for i, w in enumerate(words):
-            self.d[w].append(i)
-
-    def shortest(self, w1, w2):
-        a, b = self.d[w1], self.d[w2]
-        i = j = 0
-        ans = float('inf')
-        while i < len(a) and j < len(b):
-            ans = min(ans, abs(a[i] - b[j]))
-            if a[i] < b[j]:
-                i += 1
-            else:
-                j += 1
-        return ans
-```
 
 ---
 
