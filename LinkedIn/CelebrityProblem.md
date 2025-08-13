@@ -39,6 +39,11 @@ Our algorithm firstly narrows the people down to a single celebrityCandidate usi
 
 ```java
 // O(N)
+
+private boolean knows(int a, int b) {
+  return graph[a][b] == 1;
+}
+
 public class Solution extends Relation {
     
     private int numberOfPeople;
@@ -67,7 +72,6 @@ public class Solution extends Relation {
         return true;
     }
 }
-
 
 // solution with matrix iself O(N)
 import java.util.Stack;
@@ -128,8 +132,4 @@ class GfG {
 ```
 
 
-```
-    private boolean knows(int a, int b) {
-        return graph[a][b] == 1;
-    }
-```
+
