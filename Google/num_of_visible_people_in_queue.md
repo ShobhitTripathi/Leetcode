@@ -77,3 +77,24 @@ class Solution {
 
 
 ```
+
+```approach
+Approach:
+    ----------
+    - We process the queue from right to left using a monotonic decreasing stack.
+    - For each person:
+        1. Pop all shorter people → all are visible to the current person.
+        2. If a taller person remains → they are also visible (+1 count).
+        3. Push the current person's height on the stack for future visibility checks.
+    - Each height is pushed/popped at most once → O(n) time complexity.
+
+    Dry Run Example: heights = [10, 6, 8, 5, 11, 9]
+    -------------------------------------------------
+    i=5 (9): stack=[] → count=0 → push 9 → stack=[9]
+    i=4 (11): pop 9 (count=1), stack empty → push 11 → stack=[11]
+    i=3 (5): top 11 taller → count=1 → push 5 → stack=[5, 11]
+    i=2 (8): pop 5 (count=1), top 11 taller → count=2 → push 8 → stack=[8, 11]
+    i=1 (6): top 8 taller → count=1 → push 6 → stack=[6, 8, 11]
+    i=0 (10): pop 6 (count=1), pop 8 (count=2), top 11 taller → count=3 → push 10 → stack=[10, 11]
+    Result = [3, 1, 2, 1, 1, 0]
+```
