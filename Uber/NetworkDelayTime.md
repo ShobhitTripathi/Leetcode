@@ -4,25 +4,25 @@ You are given a network of n nodes, labeled from 1 to n. You are also given time
 
 We will send a signal from a given node k. Return the minimum time it takes for all the n nodes to receive the signal. If it is impossible for all the n nodes to receive the signal, return -1.
 
- 
-
-Example 1:
-
-
+ Example 1:
+```
 Input: times = [[2,1,1],[2,3,1],[3,4,1]], n = 4, k = 2
 Output: 2
+```
 Example 2:
-
+```
 Input: times = [[1,2,1]], n = 2, k = 1
 Output: 1
-Example 3:
+```
 
+Example 3:
+```
 Input: times = [[1,2,1]], n = 2, k = 2
 Output: -1
- 
+```
 
 Constraints:
-
+```
 1 <= k <= n <= 100
 1 <= times.length <= 6000
 times[i].length == 3
@@ -30,7 +30,31 @@ times[i].length == 3
 ui != vi
 0 <= wi <= 100
 All the pairs (ui, vi) are unique. (i.e., no multiple edges.)
+```
 
+Approach
+```
+Build an adjacency list to represent the directed weighted graph.
+
+Use Dijkstra’s algorithm since we need the shortest time from the start node k to all other nodes.
+
+Maintain a min-heap where each state is [timeSoFar, node].
+
+Maintain a dist[] array initialized to infinity; set dist[k] = 0.
+
+Pop the smallest time node from the heap; if already visited, skip it.
+
+For each neighbor, relax the edge:
+if currentTime + weight < dist[neighbor], update and push into heap.
+
+After processing all reachable nodes, the answer is the maximum shortest time among all dist[i].
+
+If any node is unreachable (still infinity), return -1.
+
+This is a direct application of Dijkstra to find the time it takes for all nodes to get the signal.
+```
+
+Solution
 ```java
 
 class Solution {
@@ -83,4 +107,8 @@ class Solution {
     }
 }
 
+```
+
+```
+The time complexity is O(E log V) because each edge is relaxed through a priority queue during Dijkstra’s algorithm.
 ```
