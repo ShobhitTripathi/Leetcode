@@ -8,28 +8,37 @@ You are given an n x n matrix isConnected where isConnected[i][j] = 1 if the ith
 
 Return the total number of provinces.
 
- 
-
 Example 1:
-
-
+```
 Input: isConnected = [[1,1,0],[1,1,0],[0,0,1]]
 Output: 2
+```
+
 Example 2:
-
-
+```
 Input: isConnected = [[1,0,0],[0,1,0],[0,0,1]]
 Output: 3
+```
  
 
 Constraints:
-
+```
 1 <= n <= 200
 n == isConnected.length
 n == isConnected[i].length
 isConnected[i][j] is 1 or 0.
 isConnected[i][i] == 1
 isConnected[i][j] == isConnected[j][i]
+```
+
+Approach
+```
+Approach:
+Treat the matrix as an adjacency list and run DFS from every unvisited city; each DFS marks all cities in that province, so the number of DFS calls equals the number of provinces.
+
+Time Complexity:
+O(n²) because we scan the entire adjacency matrix during DFS.
+```
 
 
 ```java
