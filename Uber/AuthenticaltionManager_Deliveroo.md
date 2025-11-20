@@ -1,170 +1,211 @@
-Here is a **proper, clean, production-quality Markdown file** you can directly use as a **README.md**.
+# Authentication Manager — Scalable In-Memory Implementations
+
+### A Study of Approaches from Basic to Production-Grade Solutions
+
+This document describes the evolution of solutions for the **Authentication Manager** problem (LeetCode 1797).
+We start from the simplest HashMap approach and progress toward a highly scalable **bucket-based design** suitable for millions of tokens.
+
+Each section includes:
+
+* Concept summary
+* Pros & cons
+* Time complexity
+* Full Java implementation
 
 ---
 
-# Authentication Manager — Scalable In-Memory Designs
+# 1. Problem Overview
 
-This document explains multiple approaches to designing an efficient in-memory **Authentication Manager**, starting from the simplest implementation and evolving toward a highly scalable bucket-based system.
+We need to build an authentication token manager that supports:
 
-The goal is to support:
+* `generate(tokenId, currentTime)`
+* `renew(tokenId, currentTime)`
+* `countUnexpiredTokens(currentTime)`
 
-* Fast token generation
-* Fast renewal
-* Efficient expiration
-* Scalable counting of unexpired tokens
-* High throughput (hundreds of thousands to millions of requests)
+Rules:
 
-This guide shows how each approach improves on the previous one and why the final bucket-based design is the most scalable in-memory solution.
-
----
-
-## 1. Problem Overview
-
-The system should maintain an authentication token store with the following behaviors:
-
-1. **generate(tokenId, currentTime)**
-   Creates a token that expires at `currentTime + timeToLive`.
-
-2. **renew(tokenId, currentTime)**
-   Extends expiry if the token is unexpired.
-
-3. **countUnexpiredTokens(currentTime)**
-   Returns number of active tokens.
-
-4. Expiration at time `t` occurs **before** any other action at time `t`.
-
-Key constraint:
-`currentTime` is strictly increasing.
+* Each token expires at `currentTime + timeToLive`
+* A token expiring at time `t` is considered expired for any operation at `t`
+* `currentTime` is strictly increasing
+* Up to 2000 calls (LeetCode), but we aim for **massive-scale** in-memory designs
 
 ---
 
-## 2. Approach 1 — Basic HashMap with Full Cleanup
+# 2. Approach 1 — Basic HashMap (Full Scan Cleanup)
 
-### Description
+### Idea
 
-A simple method:
-
-* Use a HashMap mapping tokenId → expiryTime.
-* On each operation, remove expired entries by scanning the entire map.
+Store all tokens in a HashMap.
+On every operation, scan the entire map and remove expired tokens.
 
 ### Pros
 
-* Easiest to implement.
-* Works for small datasets (<10k tokens).
+* Very easy to implement
 
 ### Cons
 
-* Cleanup is O(n) every time.
-* Causes latency spikes.
-* Cannot scale to large token counts.
+* Cleanup cost is O(n) every time
+* Not scalable for large datasets
 
-### Use When
+### Time Complexity
 
-* Very small scale or purely educational purposes.
+| Operation            | Time                |
+| -------------------- | ------------------- |
+| generate             | O(n) due to cleanup |
+| renew                | O(n)                |
+| countUnexpiredTokens | O(n)                |
+| cleanup              | O(n)                |
 
----
+### Java Implementation
 
-## 3. Approach 2 — Lazy Cleanup with Threshold
+```java
+class AuthenticationManager {
 
-### Description
+    private final int timeToLive;
+    private final Map<String, Integer> tokenMap;
 
-Cleanup only happens:
+    public AuthenticationManager(int timeToLive) {
+        this.timeToLive = timeToLive;
+        this.tokenMap = new HashMap<>();
+    }
 
-* When many tokens accumulate, or
-* When time advances sufficiently.
+    public void generate(String tokenId, int currentTime) {
+        cleanup(currentTime);
+        tokenMap.put(tokenId, currentTime + timeToLive);
+    }
 
-This reduces the frequency of full scans.
+    public void renew(String tokenId, int currentTime) {
+        cleanup(currentTime);
+        Integer expiry = tokenMap.get(tokenId);
+        if (expiry != null && expiry > currentTime) {
+            tokenMap.put(tokenId, currentTime + timeToLive);
+        }
+    }
 
-### Pros
+    public int countUnexpiredTokens(int currentTime) {
+        cleanup(currentTime);
+        return tokenMap.size();
+    }
 
-* More efficient than Approach 1.
-* Cleanup does not occur on every call.
-
-### Cons
-
-* Still O(n) in the worst case.
-* Memory can grow between cleanups.
-
-### Use When
-
-* Moderate workloads (10k–100k tokens).
-* Occasional latency spikes are acceptable.
-
----
-
-## 4. Approach 3 — Priority Queue + HashMap
-
-### Description
-
-Uses:
-
-* HashMap: tokenId → latest expiryTime
-* Min-heap (PriorityQueue): (expiryTime, tokenId)
-
-Expired tokens are removed via:
-
-* Pop from heap while top entry is expired.
-* Remove only if heap's expiry matches the HashMap's expiry (lazy deletion).
-
-### Pros
-
-* Cleanup cost proportional to expired tokens only.
-* No full-map scans.
-* Works well for hundreds of thousands to a few million tokens.
-
-### Cons
-
-* generate/renew operations are O(log n).
-* Heap grows larger due to stale entries.
-* Requires careful lazy cleanup.
-
-### Use When
-
-* You need predictable performance.
-* High volume systems up to a few million tokens.
-
----
-
-## 5. Approach 4 — Time-Based Bucketing (Recommended)
-
-### Description
-
-Group tokens by their expiryTime:
-
-```
-expiryTime → { tokenIds }
+    private void cleanup(int currentTime) {
+        Iterator<Map.Entry<String, Integer>> it = tokenMap.entrySet().iterator();
+        while (it.hasNext()) {
+            if (it.next().getValue() <= currentTime) {
+                it.remove();
+            }
+        }
+    }
+}
 ```
 
-Use a TreeMap to access the earliest expiry bucket. Cleanup removes whole buckets at once.
+---
 
-This design is inspired by timing wheels used in:
+# 3. Approach 2 — HashMap with Lazy Cleanup
 
-* Netty
-* Kafka
-* Linux kernel schedulers
+### Idea
+
+Cleanup is done periodically instead of every operation.
 
 ### Pros
 
-* Very fast cleanup: remove whole buckets.
-* Nearly O(1) generate and renew.
-* TreeMap contains only active expiry timestamps.
-* No stale entries like PQ-based methods.
-* Ideal for predictable TTL workloads.
+* Avoids constant scanning
+* Good for mid-scale workloads
 
 ### Cons
 
-* Slightly more complex than PQ approach.
-* TreeMap still has O(log n) overhead, though number of buckets is small.
+* Still O(n) cleanup
+* Memory grows between cleanups
 
-### Use When
+### Time Complexity
 
-* You need to support millions of active tokens.
-* Low-latency predictable operations are required.
-* You want the fastest in-memory design.
+| Operation | Time              |
+| --------- | ----------------- |
+| generate  | O(1) avg          |
+| renew     | O(1) avg          |
+| count     | O(1) avg          |
+| cleanup   | O(n) occasionally |
+
+### Java Implementation
+
+```java
+class AuthenticationManager {
+
+    private final int timeToLive;
+    private final Map<String, Integer> tokenMap;
+    private int operations = 0;
+    private final int CLEANUP_THRESHOLD = 1000;
+
+    public AuthenticationManager(int timeToLive) {
+        this.timeToLive = timeToLive;
+        this.tokenMap = new HashMap<>();
+    }
+
+    public void generate(String tokenId, int currentTime) {
+        lazyCleanup(currentTime);
+        tokenMap.put(tokenId, currentTime + timeToLive);
+    }
+
+    public void renew(String tokenId, int currentTime) {
+        lazyCleanup(currentTime);
+        Integer expiry = tokenMap.get(tokenId);
+        if (expiry != null && expiry > currentTime) {
+            tokenMap.put(tokenId, currentTime + timeToLive);
+        }
+    }
+
+    public int countUnexpiredTokens(int currentTime) {
+        lazyCleanup(currentTime);
+        return tokenMap.size();
+    }
+
+    private void lazyCleanup(int currentTime) {
+        operations++;
+        if (operations % CLEANUP_THRESHOLD != 0) return;
+
+        Iterator<Map.Entry<String, Integer>> it = tokenMap.entrySet().iterator();
+        while (it.hasNext()) {
+            if (it.next().getValue() <= currentTime) {
+                it.remove();
+            }
+        }
+    }
+}
+```
 
 ---
 
-## 6. Final In-Memory Bucket-Based Implementation
+# 4. Approach 3 — PriorityQueue + HashMap
+
+### Idea
+
+Use:
+
+* HashMap for latest expiry
+* Min-heap for earliest expirations
+
+Expired tokens are removed by repeatedly popping from the heap.
+
+### Pros
+
+* Cleanup is efficient
+* Only expired entries are removed
+* No full scans
+
+### Cons
+
+* Heap contains stale entries (fixed by lazy validation)
+* generate/renew are O(log n)
+
+### Time Complexity
+
+| Operation | Time                            |
+| --------- | ------------------------------- |
+| generate  | O(log n)                        |
+| renew     | O(log n)                        |
+| count     | O(log n)                        |
+| cleanup   | O(k log n) (k = expired tokens) |
+
+### Java Implementation
 
 ```java
 import java.util.*;
@@ -172,8 +213,98 @@ import java.util.*;
 class AuthenticationManager {
 
     private final int timeToLive;
-    private final Map<String, Integer> tokenExpiryMap;          // tokenId -> expiryTime
-    private final TreeMap<Integer, Set<String>> expiryBuckets;  // expiryTime -> tokens
+    private final Map<String, Integer> tokenExpiry;
+    private final PriorityQueue<int[]> pq;
+
+    public AuthenticationManager(int timeToLive) {
+        this.timeToLive = timeToLive;
+        this.tokenExpiry = new HashMap<>();
+        this.pq = new PriorityQueue<>(Comparator.comparingInt(a -> a[1]));
+    }
+
+    public void generate(String tokenId, int currentTime) {
+        cleanup(currentTime);
+        int expiry = currentTime + timeToLive;
+        tokenExpiry.put(tokenId, expiry);
+        pq.offer(new int[]{tokenId.hashCode(), expiry});
+    }
+
+    public void renew(String tokenId, int currentTime) {
+        cleanup(currentTime);
+        Integer oldExpiry = tokenExpiry.get(tokenId);
+        if (oldExpiry != null && oldExpiry > currentTime) {
+            int newExpiry = currentTime + timeToLive;
+            tokenExpiry.put(tokenId, newExpiry);
+            pq.offer(new int[]{tokenId.hashCode(), newExpiry});
+        }
+    }
+
+    public int countUnexpiredTokens(int currentTime) {
+        cleanup(currentTime);
+        return tokenExpiry.size();
+    }
+
+    private void cleanup(int currentTime) {
+        while (!pq.isEmpty() && pq.peek()[1] <= currentTime) {
+            int[] top = pq.poll();
+            int expiry = top[1];
+            int hash = top[0];
+            tokenExpiry.entrySet().removeIf(e -> e.getKey().hashCode() == hash && e.getValue() == expiry);
+        }
+    }
+}
+```
+
+---
+
+# 5. Approach 4 — Time-Based Bucketing (Timing Wheel Style)
+
+### Idea
+
+Group tokens by expiry time:
+
+```
+expiryTime → {tokenIds}
+```
+
+A TreeMap stores buckets in sorted order of expiry.
+
+Cleanup:
+
+* Remove entire bucket where expiryTime ≤ currentTime
+* Remove corresponding entries from token map
+
+### Pros
+
+* Cleanup is extremely fast
+* Removes large batches in O(1) per bucket
+* No heap, no stale entries
+* Scales to millions of tokens easily
+
+### Cons
+
+* Slightly more complex logic
+* TreeMap lookup is O(log n), but number of buckets is typically small
+
+### Time Complexity
+
+| Operation | Time                                |
+| --------- | ----------------------------------- |
+| generate  | O(1) avg                            |
+| renew     | O(1) avg                            |
+| count     | O(1) avg                            |
+| cleanup   | O(expired buckets + tokens in them) |
+
+### Final Recommended Java Implementation
+
+```java
+import java.util.*;
+
+class AuthenticationManager {
+
+    private final int timeToLive;
+    private final Map<String, Integer> tokenExpiryMap;
+    private final TreeMap<Integer, Set<String>> expiryBuckets;
 
     public AuthenticationManager(int timeToLive) {
         this.timeToLive = timeToLive;
@@ -202,14 +333,10 @@ class AuthenticationManager {
 
         int newExpiry = currentTime + timeToLive;
 
-        // Remove from old bucket
         Set<String> oldBucket = expiryBuckets.get(oldExpiry);
         oldBucket.remove(tokenId);
-        if (oldBucket.isEmpty()) {
-            expiryBuckets.remove(oldExpiry);
-        }
+        if (oldBucket.isEmpty()) expiryBuckets.remove(oldExpiry);
 
-        // Add to new bucket
         tokenExpiryMap.put(tokenId, newExpiry);
         expiryBuckets
             .computeIfAbsent(newExpiry, k -> new HashSet<>())
@@ -223,14 +350,12 @@ class AuthenticationManager {
 
     private void cleanup(int currentTime) {
         while (!expiryBuckets.isEmpty()) {
-
             Map.Entry<Integer, Set<String>> entry = expiryBuckets.firstEntry();
             int bucketExpiry = entry.getKey();
 
             if (bucketExpiry > currentTime) break;
 
             Set<String> tokens = expiryBuckets.pollFirstEntry().getValue();
-
             for (String tokenId : tokens) {
                 Integer expiry = tokenExpiryMap.get(tokenId);
                 if (expiry != null && expiry <= currentTime) {
@@ -244,48 +369,21 @@ class AuthenticationManager {
 
 ---
 
-## 7. Comparison Table
+# 6. Summary of Approaches
 
-| Approach          | Cleanup Complexity  | Per-Op Cost | Memory Behavior    | Suitable Scale  |
-| ----------------- | ------------------- | ----------- | ------------------ | --------------- |
-| HashMap Full Scan | O(n)                | O(1)        | Clean              | < 10k tokens    |
-| Lazy Cleanup      | O(n) occasionally   | O(1)        | Moderate memory    | 10k–100k tokens |
-| PQ + HashMap      | O(k log n)          | O(log n)    | Stale heap entries | 100k–3M tokens  |
-| Bucket-Based      | O(buckets + tokens) | O(1) avg    | Very efficient     | 1M+ tokens      |
-
-`k = number of expired tokens`, `n = active tokens`.
+| Approach            | Scale      | Pros                 | Cons                    |
+| ------------------- | ---------- | -------------------- | ----------------------- |
+| HashMap (Full Scan) | Small      | Simple               | O(n) cleanup            |
+| Lazy Cleanup        | Medium     | Reduced scans        | Still O(n) worst-case   |
+| PQ + HashMap        | Large      | Efficient cleanup    | O(log n), stale entries |
+| Bucket-Based        | Very Large | Fastest, predictable | More complex            |
 
 ---
 
-## 8. Why Bucket-Based is the Final Choice
+# 7. Final Recommendation
 
-1. Removes entire expiry buckets at once.
-2. Avoids O(log n) heap operations.
-3. Keeps only active buckets in the TreeMap.
-4. Clean, predictable, high-performance behavior.
-5. Mimics designs used in high-performance networking frameworks.
+For real-world systems that may handle millions of tokens, the **bucket-based approach** is the most efficient and scalable in-memory solution.
+It minimizes latency, avoids log(n) heap operations, and provides predictable cleanup behavior.
 
-This results in the most scalable and efficient single-node, in-memory token manager.
-
----
-
-## 9. Future Extensions
-
-For distributed scale:
-
-* Redis Sorted Sets (ZSET)
-* Clustered caches (Redis Cluster, Hazelcast, Ignite)
-* Microservice architecture with shared token store
-
-But for a single in-memory implementation, the bucket-based architecture is optimal.
-
----
-
-If you'd like, I can also prepare:
-
-* A repo-ready folder structure
-* A diagram for each approach
-* A sequence diagram for generate/renew/cleanup
-* A performance benchmark summary
 
 Just let me know.
