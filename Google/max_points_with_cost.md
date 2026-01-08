@@ -71,7 +71,8 @@ We take the maximum of the current previousRow[col] (which now contains the best
 We add row[col] to this maximum, incorporating the points from the current cell in the current row.
 After processing all rows, the array previousRow (which now holds the updated values) will contain the maximum points that can be accumulated for each cell in the last row of the matrix. The maximum value in this array is our final answer, representing the highest possible score from the top to the bottom of the matrix.
 
-Algorithm
+Algorithm:
+
 Set cols as the number of columns in points.
 Create an array previousRow of size cols.
 Iterate through each row in the points matrix:
@@ -87,7 +88,7 @@ Return maxPoints.
 
 ```
 Solution
-```
+```java
 class Solution {
     private int ROWS;
     private int COLS;
