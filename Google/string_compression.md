@@ -40,7 +40,7 @@ chars[i] is a lowercase English letter, uppercase English letter, digit, or symb
 ```
 
 Solution 
-```
+```java
 // Two Pointer and string
 class Solution {
     public int compress(char[] chars) {
