@@ -65,7 +65,7 @@ removeRange → O(k log n)
 ```
 
 Solution
-```
+```java
 class RangeModule {
 
     // start -> end (intervals are non-overlapping)
