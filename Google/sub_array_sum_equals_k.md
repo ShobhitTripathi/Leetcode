@@ -40,7 +40,7 @@ That is exactly what a hash map provides.
 ```
 
 Solution
-```
+```java
 class Solution {
     public int subarraySum(int[] nums, int k) {
 
