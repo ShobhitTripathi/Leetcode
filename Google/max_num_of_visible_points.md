@@ -81,7 +81,7 @@ Space	O(n)
 
 
 Solution
-```
+```java
 class Solution {
     public int visiblePoints(List<List<Integer>> points, int angle, List<Integer> location) {
         // Stores angles (in degrees) of all points relative to the observer
