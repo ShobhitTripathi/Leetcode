@@ -46,15 +46,20 @@ We highly recommend you to solve the problem Jump Game II before reading this ap
 Intuition
 Let the leftmost position of the tap's range be start and the rightmost position be end.
 
-First, we compute an auxiliary array max_reach. Let max_reach[i] be the maximum end over all taps having start=i. We will use this array in our algorithm.
+First, we compute an auxiliary array max_reach. Let max_reach[i] be the maximum end over all taps having start=i.
+ We will use this array in our algorithm.
 
 Let's reformulate our problem in a slightly different manner.
-You start at the position 0. You can jump from position i to the right but not further that max_reach[i]. What is the minimum number of jumps to reach position n?
+You start at the position 0. You can jump from position i to the right but not further that max_reach[i].
+What is the minimum number of jumps to reach position n?
 In this way, we reduce our problem to Jump Game II.
 
-In the greedy approach, we follow an intuitive strategy. We start with taps=0 and a pointer curr_end. taps represents the number of taps used. The pointer curr_end represents the position such that we have currently watered the part of the garden from position 0 to curr_end. Initially curr_end=0 points to the start of the garden since we have not watered anything yet.
+In the greedy approach, we follow an intuitive strategy.
+We start with taps=0 and a pointer curr_end.
+taps represents the number of taps used. The pointer curr_end represents the position such that we have currently watered the part of the garden from position 0 to curr_end. Initially curr_end=0 points to the start of the garden since we have not watered anything yet.
 
-At each step, we select the tap that can water the furthest right in the garden (we denote this position as next_end) among the taps that can reach curr_end. Then we set curr_end to next_end and continue the process.
+At each step, we select the tap that can water the furthest right in the garden (we denote this position as next_end) among the taps that can reach curr_end.
+Then we set curr_end to next_end and continue the process.
 
 We can formulate the subproblem as follows: find next_end – the maximum end over the taps having start≤curr_end (covering the position curr_end).
 
@@ -62,11 +67,16 @@ The tap is interesting only if max_reach[start]=end because otherwise there exis
 
 How can we rewrite the subproblem in terms of max_reach? We replace start with i and end with max_reach[i] and obtain: find next_end – the maximum max_reach[i] over the positions i≤curr_end.
 
-After finding next_end, we treat it as our new current position in the garden and assign curr_end=next_end. This allows us to move forward and continue the iteration. We also increment taps, since we open one more tap ending at the position next_end.
+After finding next_end, we treat it as our new current position in the garden and assign curr_end=next_end.
+This allows us to move forward and continue the iteration.
+We also increment taps, since we open one more tap ending at the position next_end.
 
-By iterating through the taps in this manner and selecting the tap with the furthest reach at each step, we aim to maximize the coverage of the garden with each tap selection. This strategy helps ensure that we efficiently water as much of the garden as possible with the minimum number of taps.
+By iterating through the taps in this manner and selecting the tap with the furthest reach at each step, we aim to maximize the coverage of the garden with each tap selection.
+This strategy helps ensure that we efficiently water as much of the garden as possible with the minimum number of taps.
 
-This process continues until we reach the end of the garden. At that point, if we have successfully selected taps that cover the entire garden, we return the count of chosen taps as the minimum number required. However, if it is not possible to water the entire garden, we return −1 to indicate that it cannot be achieved.
+This process continues until we reach the end of the garden.
+At that point, if we have successfully selected taps that cover the entire garden, we return the count of chosen taps as the minimum number required.
+However, if it is not possible to water the entire garden, we return −1 to indicate that it cannot be achieved.
 ```
 
 Algorithm
