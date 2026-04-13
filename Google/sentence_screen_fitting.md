@@ -96,7 +96,7 @@ class Solution {
 ```
 
 DP Solution
-```
+```java
 class Solution {
     public int wordsTyping(String[] sentence, int rows, int cols) {
         int n = sentence.length;
