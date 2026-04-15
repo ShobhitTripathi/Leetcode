@@ -55,7 +55,12 @@ At most 5000 calls will be made to input.
 ```java
 // O(n⋅k+m⋅(n+ km)) sorting one was O(n⋅k+m⋅(n+ km)⋅log(n+ km))
 class TrieNode {
+    // key   -> current character
+    // value -> next TrieNode
     Map<Character, TrieNode> children;
+
+    // key   -> full sentence string
+    // value -> frequency (how many times this sentence was added)
     Map<String, Integer> sentences;
 
     public TrieNode() {
@@ -66,87 +71,99 @@ class TrieNode {
 
 class AutocompleteSystem {
     private TrieNode root;
+
+    // current traversal node (based on user input so far)
     private TrieNode currNode;
+
+    // dead node → once prefix not found, we stay here to avoid null checks
     private TrieNode dead;
+
+    // stores current input string typed by user
     StringBuilder currSentence;
 
     public AutocompleteSystem(String[] sentences, int[] times) {
         root = new TrieNode();
 
+        // Build Trie with initial data
         for (int i = 0; i < sentences.length; i++) {
             addToTrie(sentences[i], times[i]);
         }
 
         currSentence = new StringBuilder();
         currNode = root;
-        dead = new TrieNode();
+        dead = new TrieNode(); // empty node (no suggestions)
     }
     
     public List<String> input(char c) {
+
+        // Case 1: End of sentence
         if (c == '#') {
-            addToTrie(currSentence.toString(), 1);
+            addToTrie(currSentence.toString(), 1); // store new sentence
             currSentence.setLength(0);
             currNode = root;
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
 
         currSentence.append(c);
+
+        // If no such prefix exists → go to dead node
         if (!currNode.children.containsKey(c)) {
             currNode = dead;
             return new ArrayList<>();
         }
 
+        // Move forward in Trie
         currNode = currNode.children.get(c);
+
+        // All candidate sentences for current prefix
         List<String> sentences = new ArrayList<>(currNode.sentences.keySet());
 
-// Using Sorting function
-        // Collections.sort(sentences, (a, b) -> {
-        //     int hotA = currNode.sentences.get(a);
-        //     int hotB = currNode.sentences.get(b);
-
-        //     if (hotA == hotB) {
-        //         return a.compareTo(b);
-        //     }
-
-        //     return hotB - hotA;
-        // });
-
-        // List<String> ans = new ArrayList<>();
-        // for (int i = 0;i < Math.min(3, sentences.size());i++) {
-        //     ans.add(sentences.get(i));
-        // }
-
+        // Min Heap (size = 3)
+        // Keeps top 3 hottest sentences
         PriorityQueue<String> heap = new PriorityQueue<>((a, b) -> {
             int hotA = currNode.sentences.get(a);
             int hotB = currNode.sentences.get(b);
+
+            // If same frequency → lexicographically larger should be removed first
             if (hotA == hotB) {
                 return b.compareTo(a);
             }
+
+            // lower frequency first (min heap)
             return hotA - hotB;
         });
 
         for (String sentence : currNode.sentences.keySet()) {
             heap.add(sentence);
             if (heap.size() > 3) {
-                heap.remove();
+                heap.remove(); // remove least relevant
             }
         }
 
+        // Build result (highest priority first)
         List<String> ans = new ArrayList<>();
         while (!heap.isEmpty()) {
             ans.add(heap.remove());
         }
         Collections.reverse(ans);
+
         return ans;
     }
 
     private void addToTrie(String sentence, int count) {
         TrieNode node = root;
+
         for (char ch : sentence.toCharArray()) {
+            // create node if not present
             node.children.computeIfAbsent(ch, k -> new TrieNode());
 
             node = node.children.get(ch);
-            node.sentences.put(sentence, node.sentences.getOrDefault(sentence, 0) + count);
+
+            // Update frequency of sentence at this prefix node
+            node.sentences.put(
+                sentence,
+                node.sentences.getOrDefault(sentence, 0) + count
+            );
         }
     }
 }
