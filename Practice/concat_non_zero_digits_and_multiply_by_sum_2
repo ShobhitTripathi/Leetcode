@@ -80,6 +80,21 @@ queries[i] = [li, ri]
 
 ```
 
+```
+The brute-force solution reconstructs the number for every query.
+The key insight is that the digit sum can be answered using a prefix sum array, 
+and the number formed after removing zeros can also be represented as a prefix structure. 
+I store the running number formed by all non-zero digits and the count of non-zero digits seen so far. 
+
+Then, for any range, I remove the prefix contribution using the same idea as extracting a substring from a rolling hash: suffix = full - prefix × 10^length. 
+This allows each query to be answered in O(1) after O(N) preprocessing, giving an overall complexity of O(N + Q).
+
+Preprocessing: O(N)
+Each Query:    O(1)
+Total:         O(N + Q)
+
+```
+
 Solution
 ```java
 
