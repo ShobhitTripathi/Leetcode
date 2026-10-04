@@ -57,7 +57,7 @@ access_times[i][1] consists only of '0' to '9'.
 
 Solution
 ```java
-
+// Time Complexity: O(NlogN) [N: accessTimes of employee]
 
 class Solution {
     public List<String> findHighAccessEmployees(List<List<String>> access_times) {
