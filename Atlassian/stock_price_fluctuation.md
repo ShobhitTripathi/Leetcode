@@ -54,6 +54,8 @@ current, maximum, and minimum will be called only after update has been called a
 
 
 Solution
+
+Approach 1: Hashed and Sorted Map
 ```java
 // Time complexity: O(NlogN)
 // Space Complecity: O(N)
