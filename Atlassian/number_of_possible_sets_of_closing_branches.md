@@ -74,7 +74,7 @@ All branches are reachable from each other by traveling some roads.
 
 
 Approach
-```
+
 1. **Build an adjacency matrix** `graph[i][j]` containing the shortest direct road between branches `i` and `j`.
 
 2. **Enumerate all possible sets of open branches** using a bitmask.  
@@ -95,7 +95,6 @@ Approach
    - Time: `O(2^n × n³)`
    - Space: `O(n²)`
   
-```
 
 Solution
 
