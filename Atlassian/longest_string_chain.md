@@ -37,6 +37,32 @@ words[i] only consists of lowercase English letters.
 
 
 Approach 1: Top-Down Dynamic Programming (Recursion + Memoization)
+```
+Algorithm
+
+Initialize a set (wordsPresent) and add all the words in the list to the set. This set will be used to check if a word is present in the list.
+
+Initialize a map (memo) having key type as String and value type as Integer. This map will store the length of the longest possible word sequence where the key is the last word in the sequence.
+
+Iterate over the list. For each word in the list perform a depth-first search.
+
+In the DFS, consider the current word (currentWord) as the last word in the word sequence.
+
+If currentWord was encountered previously we just return its corresponding value in the map memo.
+
+Initialize maxLength to 1.
+
+Iterate over the entire length of the currentWord.
+
+Create all possible words (newWord) by taking out one character at a time.
+If newWord is present in the set perform a DFS with this word and store the intermediate result in a variable currentLength.
+Update the maxLength so that it contains the length of the longest sequence possible where the currentWord is the end word.
+Set the maxLength as the value for currentWord (key) in the map.
+
+Return maxLength.
+
+```
+Code
 ```Java
 /*
 Let N be the number of words in the list and L be the maximum possible length of a word.
