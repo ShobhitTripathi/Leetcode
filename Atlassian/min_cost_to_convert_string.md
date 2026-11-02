@@ -109,10 +109,7 @@ class Solution {
         for (int i = 0; i < stringLength; i++) {
             if (source.charAt(i) != target.charAt(i)) {
                 long charConversionCost =
-                    minConversionCosts[source.charAt(i) - 'a'][target.charAt(
-                            i
-                        ) -
-                        'a'];
+                    minConversionCosts[source.charAt(i) - 'a'][target.charAt(i) - 'a'];
                 if (charConversionCost == -1) {
                     return -1; // Conversion not possible
                 }
