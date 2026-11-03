@@ -189,3 +189,14 @@ class Solution {
 }
 
 ```
+
+Interview Summary
+```
+
+I use backtracking with column-wise addition. Instead of assigning digits to all characters and validating the equation at the end, I process each column from right to left.
+
+For every column, I assign unused digits to unassigned characters, calculate the sum along with the carry, and verify that the resulting digit matches the corresponding result character.
+
+If the digit doesn't match or violates the uniqueness/leading-zero constraint, I backtrack immediately. This helps prune invalid combinations early and avoids exploring unnecessary assignments.
+
+```
