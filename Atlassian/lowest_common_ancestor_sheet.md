@@ -50,7 +50,6 @@ public TreeNode lowestCommonAncestor(
 
 ### Visual intuition
 
-[【怒刷力扣】二叉树的公共祖先类题目，搞懂搜索整棵树和搜索单条边的区别，轻松手撕算法题-腾讯云开发者社区-腾讯云](https://images.openai.com/static-rsc-4/x1XY0BsPIBVPNUoPDeK96NO6f5Ougwg04DmvLjoxF-xOXaMoA0QR362_fNTTLJ1h5lIq9Wc3UE474htnv9-Rrdv8Uj6paVbPAe-Ew_5R3DM-X-OOH900RLUgvGBImYlIbzaJIB24yNjwo3VEisiKVHKgBWiXwM-O5wrxnCGLnso?purpose=inline)
 
 [cloud.tencent.com](https://cloud.tencent.com/developer/article/2604227?utm_source=chatgpt.com)
 
