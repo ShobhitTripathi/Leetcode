@@ -99,7 +99,7 @@ If the earliest available court cannot accommodate the booking, no other court c
 
 ### **Java implementation**
 
-```
+```java
 
 class BookingRecord {
     int id;
@@ -199,13 +199,13 @@ Almost nothing!
 
 Previously:
 
-```
+```java
 court.availableAt = booking.finishTime;
 ```
 
 Now:
 
-```
+```java
 court.availableAt = booking.finishTime + maintenanceTime;
 ```
 
@@ -213,7 +213,7 @@ The same Min Heap algorithm works.
 
 ### **Java implementation**
 
-```
+```java
 
 public List<Court> assignCourts(
         List<BookingRecord> bookings,
@@ -294,7 +294,7 @@ Booking 4: Earliest possible start = 13:00
 
 We need one additional field: `bookingsSinceMaintenance`.
 
-```
+```java
 
 class Court {
     int courtId;
@@ -330,7 +330,7 @@ For each booking:
 
 ### **3.3 Java implementation**
 
-```
+```java
 
 public List<Court> assignCourtWithMaintenance(
         List<BookingRecord> bookings,
@@ -446,7 +446,7 @@ The heap represents bookings currently occupying courts. The maximum number of s
 
 ### **Java implementation**
 
-```
+```java
 
 public int minCourtsRequired(
         List<BookingRecord> bookings) {
@@ -547,7 +547,7 @@ Two intervals overlap if:
 
 ### **Java implementation**
 
-```
+```java
 
 public boolean hasConflict(
         BookingRecord a,
