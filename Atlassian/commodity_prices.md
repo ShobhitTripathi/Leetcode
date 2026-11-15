@@ -61,13 +61,13 @@ Notice that the previous maximum was invalidated. This is the central challenge.
 
 The simplest implementation uses a HashMap.
 
-```
+```java
 Map<Long, Integer> prices = new HashMap<>();
 ```
 
 ### **Upsert**
 
-```
+```java
 public void upsert(long timestamp, int price) {
     prices.put(timestamp, price);
 }
@@ -75,7 +75,7 @@ public void upsert(long timestamp, int price) {
 
 ### **Get maximum**
 
-```
+```java
 public int getMaxCommodityPrice() {
 
     int max = Integer.MIN_VALUE;
@@ -144,7 +144,7 @@ If we update timestamp 100 from 90 to 70, price 90 must still exist because time
 
 ### **Java implementation**
 
-```
+```java
 
 class CommodityPriceTracker {
 
@@ -231,7 +231,7 @@ New maxPrice = 100
 
 Simply update the variable:
 
-```
+```java
 maxPrice = Math.max(maxPrice, newPrice);
 ```
 
@@ -260,7 +260,7 @@ We must check whether any other timestamp still has price 100.
 
 ### **Java implementation**
 
-```
+```java
 
 class CommodityPriceTracker {
 
