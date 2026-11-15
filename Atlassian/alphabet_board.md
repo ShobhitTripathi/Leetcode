@@ -33,7 +33,7 @@ Important edge case: `z` is alone in the last row. We must move down to `z` only
 
 ## 2. Java solution (optimal)
 
-```
+```java
 
 class Solution {
     public String alphabetBoardPath(String target) {
