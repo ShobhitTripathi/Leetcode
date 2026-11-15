@@ -36,7 +36,7 @@ Pass 2: Identify Yellow characters
 
 ### Java Solution
 
-```
+```java
 
 public String generateFeedback(String guess, String secret) {
     int n = guess.length();
@@ -101,7 +101,7 @@ The important concept is that every remaining candidate must produce exactly the
 
 Suppose:
 
-```
+```java
 potentialSecrets = ["crane", "plane", "slate", "flame"]
 secret = "plane"
 maxAttempts = 5
@@ -138,7 +138,7 @@ We'll create a `WordleSolver` class with two methods:
 - `generateFeedback()` – generates feedback.
 - `solve()` – iteratively narrows down the candidate list.
 
-```
+```java
 
 import java.util.*;
 
