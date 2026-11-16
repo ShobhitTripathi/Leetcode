@@ -55,7 +55,7 @@ We can solve this using DFS and parent pointers.
 
 **Data model (Java):**
 
-```
+```java
 
 class Group {
     String id;
@@ -96,7 +96,7 @@ LCA is associative for nodes in a tree:
 
 ### **Java solution**
 
-```
+```java
 
 public Group getCommonGroupForEmployees(
         List<Employee> employees) {
@@ -173,7 +173,7 @@ A tree is no longer sufficient because a node can have multiple parents.
 
 Instead of maintaining a single `parent`, maintain multiple parents.
 
-```
+```java
 
 class Group {
     String id;
@@ -206,7 +206,7 @@ In a DAG, there can be multiple common ancestors.
 
 For example:
 
-```
+```java
              Company
              /     \
             A       B
@@ -259,7 +259,7 @@ For every target employee:
 
 ### **Java implementation**
 
-```
+```java
 
 public Group getCommonGroupForEmployees(
         List<Employee> employees) {
@@ -461,7 +461,7 @@ V10 → V11
 
 ### **4.5 Java implementation sketch**
 
-```
+```java
 
 class HierarchySnapshot {
     final long version;
@@ -623,7 +623,7 @@ If multiple groups are common, choose one deterministically (for example, lexico
 
 ### **Java implementation**
 
-```
+```java
 
 public String getCommonGroupForEmployees(
         List<String> employeeIds,
