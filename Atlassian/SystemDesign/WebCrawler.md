@@ -1,6 +1,6 @@
-CHAPTER 9: DESIGN A WEB CRAWLER
+# CHAPTER 9: DESIGN A WEB CRAWLER 
 
-Step 1 - Understand the problem and establish design scope
+## Step 1 - Understand the problem and establish design scope
 
 Sample Questions -:
 ```
@@ -48,12 +48,33 @@ storage units, go through “Power of 2” section in Chapter 2 again.
 storage is needed to store five-year content.
 ```
 
-Step 2 - Propose high-level design and get buy-in
+## Step 2 - Propose high-level design and get buy-in
 
+<img width="1432" height="1067" alt="image" src="https://github.com/user-attachments/assets/3dc2e7de-6535-4beb-b379-e2a5f41d9a87" />
 
+Steps
+```
+Step 1: Add seed URLs to the URL Frontier
+Step 2: HTML Downloader fetches a list of URLs from URL Frontier.
+Step 3: HTML Downloader gets IP addresses of URLs from DNS resolver and starts
+downloading.
+Step 4: Content Parser parses HTML pages and checks if pages are malformed.
+Step 5: After content is parsed and validated, it is passed to the “Content Seen?” component.
+Step 6: “Content Seen” component checks if a HTML page is already in the storage.
+• If it is in the storage, this means the same content in a different URL has already been
+processed. In this case, the HTML page is discarded.
+• If it is not in the storage, the system has not processed the same content before. The
+content is passed to Link Extractor.
+Step 7: Link extractor extracts links from HTML pages.
+Step 8: Extracted links are passed to the URL filter.
+Step 9: After links are filtered, they are passed to the “URL Seen?” component.
+Step 10: “URL Seen” component checks if a URL is already in the storage, if yes, it is
+processed before, and nothing needs to be done.
+Step 11: If a URL has not been processed before, it is added to the URL Frontier.
 
+```
 
-
+## Step 3 - Design deep dive
 
 
 
