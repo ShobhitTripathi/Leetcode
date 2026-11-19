@@ -77,4 +77,115 @@ Step 11: If a URL has not been processed before, it is added to the URL Frontier
 ## Step 3 - Design deep dive
 
 
+<img width="1069" height="1982" alt="image" src="https://github.com/user-attachments/assets/d518dc3e-e0df-47f9-9f49-714d2ed974c7" />
 
+
+• Queue router: It ensures that each queue (b1, b2, … bn) only contains URLs from the
+same host.
+• Mapping table: It maps each host to a queue.
+<img width="1178" height="561" alt="image" src="https://github.com/user-attachments/assets/c4c87305-3acb-4df7-93f3-071e3baddfe0" />
+
+• FIFO queues b1, b2 to bn: Each queue contains URLs from the same host.
+• Queue selector: Each worker thread is mapped to a FIFO queue, and it only downloads
+URLs from that queue. The queue selection logic is done by the Queue selector.
+• Worker thread 1 to N. A worker thread downloads web pages
+
+• Prioritizer: It takes URLs as input and computes the priorities.
+• Queue f1 to fn: Each queue has an assigned priority. Queues with high priority are
+selected with higher probability.
+• Queue selector: Randomly choose a queue with a bias towards queues with higher
+priority.
+
+Freshness
+Few strategies to optimize freshness are listed as follows:
+• Recrawl based on web pages’ update history.
+• Prioritize URLs and recrawl important pages first and more frequently.
+
+
+Storage for URL Frontier
+```
+We adopted a hybrid approach. 
+The majority of URLs are stored on disk, so the storage space
+is not a problem. To reduce the cost of reading from the disk and writing to the disk, we
+maintain buffers in memory for enqueue/dequeue operations. Data in the buffer is
+periodically written to the disk.
+```
+
+Robots.txt
+```
+Robots.txt, called Robots Exclusion Protocol, is a standard used by websites to communicate
+with crawlers. It specifies what pages crawlers are allowed to download. Before attempting to
+crawl a web site, a crawler should check its corresponding robots.txt first and follow its rules.
+To avoid repeat downloads of robots.txt file, we cache the results of the file. The file is
+downloaded and saved to cache periodically. Here is a piece of robots.txt file taken from
+https://www.amazon.com/robots.txt. Some of the directories like creatorhub are disallowed
+for Google bot.
+User-agent: Googlebot
+Disallow: /creatorhub/*
+Disallow: /rss/people/*/reviews
+Disallow: /gp/pdp/rss/*/reviews
+Disallow: /gp/cdp/member-reviews/
+Disallow: /gp/aw/cr/
+Besides robots.txt, performance
+```
+
+Performance optimization
+
+1. Distributed crawl
+2. Cache DNS Resolver - DNS cache keeps the domain
+name to IP address mapping and is updated periodically by cron jobs
+3. Locality - geographical distribution
+4. Short timeout
+
+<img width="1098" height="917" alt="image" src="https://github.com/user-attachments/assets/cd8fed24-e5a7-43b8-a6bc-29faf5e480e4" />
+
+Robustness
+```
+Besides performance optimization, robustness is also an important consideration. We present
+a few approaches to improve the system robustness:
+• Consistent hashing: This helps to distribute loads among downloaders. A new
+downloader server can be added or removed using consistent hashing. Refer to Chapter 5:
+Design consistent hashing for more details.
+• Save crawl states and data: To guard against failures, crawl states and data are written to
+a storage system. A disrupted crawl can be restarted easily by loading saved states and
+data.
+• Exception handling: Errors are inevitable and common in a large-scale system. The
+crawler must handle exceptions gracefully without crashing the system.
+• Data validation: This is an important measure to prevent system errors.
+```
+
+Extensibility
+PNG Downloader module is plugged-in to download PNG files.
+Web Monitor module is added to monitor the web and prevent copyright and trademark
+infringements.
+
+<img width="1429" height="973" alt="image" src="https://github.com/user-attachments/assets/9409fee3-297e-4e3d-a04d-f2821dd85351" />
+
+
+Detect and avoid problematic content
+
+1. Redundant content:  Hashes or checksums help to detect duplication [11].
+2. Spider traps : idiaity them and try to avoid them
+3. Data noise: excluded if possible.
+
+## Step 4 - Wrap up
+```
+characteristics of a good crawler: scalability, politeness, extensibility, and robustness. 
+
+points:
+• Server-side rendering: Numerous websites use scripts like JavaScript, AJAX, etc to
+generate links on the fly. If we download and parse web pages directly, we will not be able
+to retrieve dynamically generated links. To solve this problem, we perform server-side
+rendering (also called dynamic rendering) first before parsing a page [12].
+• Filter out unwanted pages: With finite storage capacity and crawl resources, an anti-spam
+component is beneficial in filtering out low quality and spam pages [13] [14].
+• Database replication and sharding: Techniques like replication and sharding are used to
+improve the data layer availability, scalability, and reliability.
+• Horizontal scaling: For large scale crawl, hundreds or even thousands of servers are
+needed to perform download tasks. The key is to keep servers stateless.
+• Availability, consistency, and reliability: These concepts are at the core of any large
+system’s success. We discussed these concepts in detail in Chapter 1. Refresh your
+memory on these topics.
+• Analytics: Collecting and analyzing data are important parts of any system because data
+is key ingredient for fine-tuning.
+```
